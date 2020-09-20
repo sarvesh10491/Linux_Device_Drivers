@@ -15,12 +15,12 @@ MODULE_DESCRIPTION("A simple Linux char driver");  // The description -- see mod
 MODULE_VERSION("1.0");                             // A version number to inform users
 
 
-static int    majorNumber;                      ///< Stores the device number -- determined automatically
-static char   message[256] = {0};               ///< Memory for the string that is passed from userspace
-static short  size_of_message;                  ///< Used to remember the size of the string stored
-static int    numberOpens = 0;                  ///< Counts the number of times the device is opened
-static struct class*  hellocharClass  = NULL;   ///< The device-driver class struct pointer
-static struct device* hellocharDevice = NULL;   ///< The device-driver device struct pointer
+static int    majorNumber;                      // Stores the device number dynamically allocated
+static char   message[256] = {0};               // Memory for the string that is passed from userspace
+static short  size_of_message;                  // Used to remember the size of the string stored
+static int    numberOpens = 0;                  // Counts the number of times the device is opened
+static struct class*  hellocharClass  = NULL;   // The device-driver class struct pointer
+static struct device* hellocharDevice = NULL;   // The device-driver device struct pointer
  
 
 // The prototype functions for the character driver -- must come before the struct definition
@@ -30,7 +30,7 @@ static ssize_t dev_read(struct file *, char *, size_t, loff_t *);
 static ssize_t dev_write(struct file *, const char *, size_t, loff_t *);
  
 
-/* @brief Devices are represented as file structure in the kernel. The file_operations structure from
+/* Devices are represented as file structure in the kernel. The file_operations structure from
 *  /linux/fs.h lists the callback functions that you wish to associated with your file operations
 *  using a C99 syntax structure. char devices usually implement open, read, write and release calls
 */
@@ -90,7 +90,7 @@ static void __exit hellochar_exit(void){
    device_destroy(hellocharClass, MKDEV(majorNumber, 0));     // remove the device
    class_unregister(hellocharClass);                          // unregister the device class
    class_destroy(hellocharClass);                             // remove the device class
-   unregister_chrdev(majorNumber, DEVICE_NAME);             // unregister the major number
+   unregister_chrdev(majorNumber, DEVICE_NAME);               // unregister the major number
    printk(KERN_INFO "helloChar: Goodbye from the LKM!\n");
 }
  
@@ -132,7 +132,7 @@ static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *of
 }
  
 
-/*  This function is called whenever the device is being written to from user space i.e.
+/* This function is called whenever the device is being written to from user space i.e.
 *  data is sent to the device from the user. The data is copied to the message[] array in this
 *  LKM using the sprintf() function along with the length of the string.
 *  @param filep A pointer to a file object
@@ -149,7 +149,7 @@ static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, lof
 }
  
 
-/* @brief The device release function that is called whenever the device is closed/released by
+/* The device release function that is called whenever the device is closed/released by
 *  the userspace program
 *  @param inodep A pointer to an inode object (defined in linux/fs.h)
 *  @param filep A pointer to a file object (defined in linux/fs.h)
@@ -161,8 +161,8 @@ static int dev_release(struct inode *inodep, struct file *filep){
 }
 
  
-/* @brief A module must use the module_init() module_exit() macros from linux/init.h, which
- *  identify the initialization function at insertion time and the cleanup function (as listed above)
+/* A module must use the module_init() module_exit() macros from linux/init.h, which
+*  identify the initialization function at insertion time and the cleanup function (as listed above)
 */
 module_init(hellochar_init);
 module_exit(hellochar_exit);
