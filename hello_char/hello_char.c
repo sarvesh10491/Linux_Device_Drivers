@@ -9,7 +9,7 @@
 #define  CLASS_NAME  "hello_class"   // The device class -- this is a character device driver
  
 
-MODULE_LICENSE("GPL");                             // The license type -- this affects available functionality
+MODULE_LICENSE("GPL v2");                          // The license type -- this affects available functionality
 MODULE_AUTHOR("Sarvesh");                          // The author -- visible when you use modinfo
 MODULE_DESCRIPTION("A simple Linux char driver");  // The description -- see modinfo
 MODULE_VERSION("1.0");                             // A version number to inform users

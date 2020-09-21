@@ -40,5 +40,8 @@ int main(){
    }
    printf("The received message is: [%s]\n", receive);
    printf("\nEnd of the program\n");
+
+   close(fd);
+   
    return 0;
 }

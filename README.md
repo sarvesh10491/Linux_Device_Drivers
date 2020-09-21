@@ -11,3 +11,7 @@ A simple driver to introduce barebones of LKM(Loadable kernel module)
 ### hello_char
 ---
 A simple driver to introduce barebones of char device driver concepts.
+
+### ioctl
+---
+A simple driver to introduce ioctl operation concepts.
