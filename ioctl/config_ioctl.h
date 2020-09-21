@@ -16,10 +16,10 @@ typedef struct
 
 /*
 
-_IO		an	ioctl with no parameters
-_IOW	an	ioctl with write parameters (copy_from_user)
-_IOR	an	ioctl with read parameters (copy_to_user)
-_IOWR	an	ioctl with both write and read parameters
+_IO     an	ioctl with no parameters
+_IOW    an	ioctl with write parameters (copy_from_user)
+_IOR    an	ioctl with read parameters (copy_to_user)
+_IOWR   an	ioctl with both write and read parameters
 
 The first argument : 8-bit magic number [bits 15:8] – to render the commands unique enough for identifying with some unique typically an ASCII character letter or number. 
 Because of the large number of drivers, many drivers share a partial letter with other drivers.
@@ -32,8 +32,8 @@ Size of the command argument [bits 29:16] – computed using sizeof() with the c
 
 */
 
-#define GET_CONFIG_VAR _IOR('q', 1, config_dev_t *)
-#define CLR_CONFIG_VAR _IO('q', 2)
-#define SET_CONFIG_VAR _IOW('q', 3, config_dev_t *)
+#define GET_CONFIG_VAR _IOR('a', 1, config_dev_t *)
+#define CLR_CONFIG_VAR _IO('b', 2)
+#define SET_CONFIG_VAR _IOW('c', 3, config_dev_t *)
 
 #endif
