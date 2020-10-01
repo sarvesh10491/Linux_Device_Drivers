@@ -19,3 +19,7 @@ A simple driver to introduce ioctl operation concepts.
 ### timer_api
 ---
 A simple driver to introduce Timer API operation concepts.
+
+### procfs
+---
+A simple driver to introduce procfs concepts.
