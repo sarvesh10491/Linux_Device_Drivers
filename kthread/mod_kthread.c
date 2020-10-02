@@ -7,6 +7,7 @@
 #include <linux/init.h>
 #include <linux/string.h>
 #include <linux/sched.h>
+#include <linux/delay.h>
 
 #define NUM_KTHREAD 2
 
@@ -15,23 +16,31 @@ MODULE_AUTHOR("Sarvesh");
 MODULE_DESCRIPTION("A simple Linux kthread driver");
 MODULE_VERSION("1.0");
 
-struct task_struct *(ts[NUM_KTHREAD]);
-char ktstr[10];
+static struct task_struct *(ts[NUM_KTHREAD]);   // kthread task_struct structure
+static char ktstr[10];
 int ret, err;
 int i,j;
 
+
+// kthread function
 static int kthread_func(void *arg)
 {
 /* Every kthread has a struct task_struct associated with it which is it's identifier.
 * Whenever a thread is schedule for execution, the kernel sets "current" pointer to it's struct task_struct.
 * current->comm is the name of the command that caused creation of this thread
-* current->pid is the process of currently executing thread 
+* current->pid is the process of currently executing thread.
+* current->state is the id of currently executing thread.
+
+When someone calls kthread_stop on your kthread, it will be woken and this will return true. 
+You should then return, and your return value will be passed through to kthread_stop.
 */
     while(!kthread_should_stop()){
         if(current->state == TASK_RUNNING)
             printk(KERN_INFO "Thread task : %s\t PID:[%d]\t CPU:%d\n", current->comm, current->pid, current->cpu);
         else
             printk(KERN_INFO "Thread task : %s\t PID:[%d]\t State:%ld\t\n", current->comm, current->pid, current->state);
+        
+        msleep(5000);
     }
     return 0;
 }
