@@ -15,11 +15,10 @@ MODULE_AUTHOR("Sarvesh");
 MODULE_DESCRIPTION("A simple Linux kthread driver");
 MODULE_VERSION("1.0");
 
-static struct task_struct *(ts[NUM_KTHREAD]);
-static char ktstr[10];
-int err;
-int i;
-int j;
+struct task_struct *(ts[NUM_KTHREAD]);
+char ktstr[10];
+int ret, err;
+int i,j;
 
 static int kthread_func(void *arg)
 {
@@ -28,7 +27,12 @@ static int kthread_func(void *arg)
 * current->comm is the name of the command that caused creation of this thread
 * current->pid is the process of currently executing thread 
 */
-    printk(KERN_INFO "This is thread : %s[PID = %d]\n", current->comm, current->pid);
+    while(!kthread_should_stop()){
+        if(current->state == TASK_RUNNING)
+            printk(KERN_INFO "Thread task : %s\t PID:[%d]\t CPU:%d\n", current->comm, current->pid, current->cpu);
+        else
+            printk(KERN_INFO "Thread task : %s\t PID:[%d]\t State:%ld\t\n", current->comm, current->pid, current->state);
+    }
     return 0;
 }
 
@@ -59,7 +63,9 @@ static int __init mod_kthread_init(void){
 static void __exit mod_kthread_exit(void){
     for(j=0; j<NUM_KTHREAD; j++){
         printk(KERN_INFO "Stopping Thread %d\n",j);
-        kthread_stop(ts[j]);
+        ret = kthread_stop(ts[j]);
+        if(!ret)
+            printk(KERN_INFO "Thread %d stopped successfully.\n",j);
     }
 
     printk(KERN_INFO "mod_kthread: Goodbye from the LKM!\n");
