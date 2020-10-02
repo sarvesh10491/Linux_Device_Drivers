@@ -23,3 +23,7 @@ A simple driver to introduce Timer API operation concepts.
 ### procfs
 ---
 A simple driver to introduce procfs concepts.
+
+### kthread
+---
+A simple driver to introduce kernel threads concepts.
