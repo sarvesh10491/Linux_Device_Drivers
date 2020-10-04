@@ -27,3 +27,7 @@ A simple driver to introduce procfs concepts.
 ### kthread
 ---
 A simple driver to introduce kernel threads concepts.
+
+### waitqueue
+---
+A simple driver to introduce waitqueue concepts.
