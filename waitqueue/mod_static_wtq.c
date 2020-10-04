@@ -59,15 +59,18 @@ static int kthread_func(void *arg)
     while(1){
         printk(KERN_INFO "mod_static_wtq: Waiting For Events.\n");
 
-        wait_event_interruptible(static_wtq, wtq_flag != 0 );
+        wait_event_interruptible(static_wtq, wtq_flag);     // waiting for events condition based on wtq_flag
         
         if(wtq_flag == 1){
             printk(KERN_INFO "mod_static_wtq: Event Came From Read Function call : %d\n", ++read_calls);
         }
         if(wtq_flag == 2){
-            printk(KERN_INFO "mod_static_wtq: Event Came From Write Function call for %s sec timeout : %d\n", timeoutstr, ++write_calls);
-            wait_event_interruptible_timeout(static_wtq, 1==0, (int)simple_strtol(timeoutstr, NULL, 10));
-            printk(KERN_INFO "mod_static_wtq: Timeout event completed.\n");
+            printk(KERN_INFO "mod_static_wtq: Event Came From Write Function call for %ld sec timeout : %d\n", 
+                                                    simple_strtol(timeoutstr, NULL, 10), 
+                                                    ++write_calls);     
+                                                    
+            wait_event_interruptible_timeout(static_wtq, 0, HZ*simple_strtol(timeoutstr, NULL, 10)); // waiting for events condition based on timeout value set in char device
+            printk(KERN_INFO "mod_static_wtq: Timeout event %d completed.\n", write_calls);
         }
         if(wtq_flag == -1){
             printk(KERN_INFO "mod_static_wtq: Event Came From Exit Function\n");
