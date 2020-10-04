@@ -30,8 +30,9 @@ static struct device* mod_static_wtqDevice = NULL;
 static struct task_struct *wtq_ktrd_ts;   // kthread task_struct structure
 static char ktstr[10];
 
-uint32_t read_calls = 0;
+uint32_t read_calls = 0, write_calls = 0;
 uint8_t wtq_flag, ret, err;
+char timeoutstr[5] = "0";
  
 //------------------------------------------------------------------------------------------------
 
@@ -60,11 +61,18 @@ static int kthread_func(void *arg)
 
         wait_event_interruptible(static_wtq, wtq_flag != 0 );
         
+        if(wtq_flag == 1){
+            printk(KERN_INFO "mod_static_wtq: Event Came From Read Function call : %d\n", ++read_calls);
+        }
         if(wtq_flag == 2){
+            printk(KERN_INFO "mod_static_wtq: Event Came From Write Function call for %s sec timeout : %d\n", timeoutstr, ++write_calls);
+            wait_event_interruptible_timeout(static_wtq, 1==0, (int)simple_strtol(timeoutstr, NULL, 10));
+            printk(KERN_INFO "mod_static_wtq: Timeout event completed.\n");
+        }
+        if(wtq_flag == -1){
             printk(KERN_INFO "mod_static_wtq: Event Came From Exit Function\n");
             return 0;
         }
-        printk(KERN_INFO "mod_static_wtq: Event Came From Read Function call : %d\n", ++read_calls);
         wtq_flag = 0;
     }
     do_exit(0);
@@ -98,10 +106,18 @@ static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *of
 }
  
 
-static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, loff_t *offset){
+static ssize_t dev_write(struct file *filep, const char *buff, size_t len, loff_t *offset){
     printk(KERN_INFO "mod_static_wtq: write call\n");
+
+    wtq_flag = 2;
+    memset(timeoutstr , 0 , sizeof(timeoutstr));
+    if(copy_from_user(timeoutstr, buff, len)){
+		return -EFAULT;
+	}
+
+    wake_up_interruptible(&static_wtq);
     
-    return 0;
+    return len;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -120,7 +136,7 @@ static int __init mod_static_wtq_init(void){
     mod_static_wtqClass = class_create(THIS_MODULE, CLASS_NAME);
     if(IS_ERR(mod_static_wtqClass)){                
         unregister_chrdev(majorNumber, DEVICE_NAME);
-        printk(KERN_ALERT "Failed to register device class\n");
+        printk(KERN_ALERT "mod_static_wtq: Failed to register device class\n");
         return PTR_ERR(mod_static_wtqClass);          
     }
     printk(KERN_INFO "mod_static_wtq: device class registered successfully\n");
@@ -143,7 +159,7 @@ static int __init mod_static_wtq_init(void){
 
     wtq_ktrd_ts = kthread_run(kthread_func, NULL, ktstr);
     if(IS_ERR(wtq_ktrd_ts)){
-        printk(KERN_INFO "ERROR: Cannot create thread\n");
+        printk(KERN_INFO "mod_static_wtq: ERROR: Cannot create thread\n");
         err = PTR_ERR(wtq_ktrd_ts);
         wtq_ktrd_ts = NULL;
         return err;
@@ -157,12 +173,12 @@ static int __init mod_static_wtq_init(void){
 
 
 static void __exit mod_static_wtq_exit(void){
-    printk(KERN_INFO "Stopping Static-Waitqueue-Thread Thread\n");
+    printk(KERN_INFO "mod_static_wtq: Stopping Static-Waitqueue-Thread Thread\n");
 
-    wtq_flag = 2;
+    wtq_flag = -1;
     wake_up_interruptible(&static_wtq);
 
-    printk(KERN_INFO "Static-Waitqueue-Thread stopped successfully.\n");
+    printk(KERN_INFO "mod_static_wtq: Static-Waitqueue-Thread stopped successfully.\n");
 
 
     device_destroy(mod_static_wtqClass, MKDEV(majorNumber, 0));
