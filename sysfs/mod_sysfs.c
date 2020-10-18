@@ -26,7 +26,7 @@ struct kobject *my_kobj;
 volatile int dev_value = 0;     // This attribute file be crated under our sysfs directory to which we can read/write
 
 
-// The prototype file ops functions for the procfs driver
+// The prototype file ops functions for the sysfs driver
 static ssize_t  sysfs_show(struct kobject *, struct kobj_attribute *, char *);
 static ssize_t  sysfs_store(struct kobject *, struct kobj_attribute *,const char *, size_t);
  

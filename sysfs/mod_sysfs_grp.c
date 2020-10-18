@@ -28,7 +28,7 @@ volatile int one_attr = 0;
 volatile int two_attr = 1;
 
 
-// The prototype file ops functions for the procfs driver
+// The prototype file ops functions for the sysfs driver
 static ssize_t  sysfs_show(struct kobject *, struct kobj_attribute *, char *);
 static ssize_t  sysfs_store(struct kobject *, struct kobj_attribute *,const char *, size_t);
  

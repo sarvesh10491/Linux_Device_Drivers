@@ -24,6 +24,10 @@ A simple driver to introduce Timer API operation concepts.
 ---
 A simple driver to introduce procfs concepts.
 
+### sysfs
+---
+A simple driver to introduce sysfs concepts.
+
 ### kthread
 ---
 A simple driver to introduce kernel threads concepts.
@@ -31,3 +35,7 @@ A simple driver to introduce kernel threads concepts.
 ### waitqueue
 ---
 A simple driver to introduce waitqueue concepts.
+
+### interrupt
+---
+A simple driver to introduce interrupt concepts.
